@@ -25,3 +25,4 @@ for i in xrange(liczba_czastek):
     ax.add_artist(kolko)
 
 fig.savefig('kolka.png')
+plt.show()
