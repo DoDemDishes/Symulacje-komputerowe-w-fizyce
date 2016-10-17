@@ -17,8 +17,6 @@ for i in xrange(10):
     xprob += np.random.uniform(-1.,1.,n)
 xnew = mu + sigma * xprob * np.sqrt(3./10)
 
-print xnew
-
 #Rysowanie wykresow
 plt.figure(1)
 plt.subplot(211)
@@ -26,5 +24,5 @@ plt.hist(lista, bins = 20, normed = True)
 plt.plot(lista, mlab.normpdf(lista,mu,sigma))
 plt.title(s)
 plt.subplot(212)
-plt.hist(xnew, bins = 20, normed = True)
+plt.hist(xnew, bins = 20, normed = True, color = 'g')
 plt.show()
