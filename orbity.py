@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from operator import add
 
 G = 0.01
 dt = 0.001
@@ -29,45 +30,53 @@ def potential (radius, mass1, mass2):
     p = -G*mass1*mass2/(np.linalg.norm(radius))
     return p
 
+def kinetic (planeta, v):
+    kin = (1./2.)*planeta.m*(v**2)
+    return kin
+
 def verlet_start (r0, v0):
     start = r0 - v0*dt
     polozenia.append(start)
     polozenia.append(r0)
 
-def kinetic (planeta, v):
-    kin = (1/2) * planeta.m * (v**2)
+def euler_start (lista_polozen, lista_pedow, r0, v0, mass):
+    lista_polozen.append(r0)
+    lista_pedow.append(v0 * mass)
 
-def euler_start (tablica_polozen, tablica_pedow, r0, v0, mass):
-    tablica_polozen.append(r0)
-    tablica_pedow.append(v0 * mass)
+def leapfrog_start (planeta, lista_predkosci, lista_polozen, gwiazda):
+    vminus = planeta.v - (force(planeta.r, planeta.m, gwiazda.m)/planeta.m)*(dt/2)
+    lista_predkosci.append(vminus)
+    lista_polozen.append(planeta.r)
 
-def leapfrog_start (planeta, tabela_predkosci, tabela_polozen, gwiazda):
-    vminus = planeta.v - (1/planeta.m)*(force(planeta.r, planeta.m, gwiazda.m)/(planeta.m))*(1/2)*dt
-    tabela_predkosci.append(vminus)
-    tabela_polozen.append(planeta.r)
-
-def verlet (tablica, liczba_iteracji, planeta, gwiazda, tablica_kinetyczna):
+def verlet (lista_polozen, liczba_iteracji, planeta, gwiazda, lista_kinetyczna, lista_potencjalow):
     for i in xrange(liczba_iteracji):
-        rn = 2*tablica[i+1] - tablica[i] + force(tablica[i+1], planeta.m, gwiazda.m)/(planeta.m)*(dt**2)
-        tablica.append(rn)
+        rn = 2*lista_polozen[i+1] - lista_polozen[i] + force(lista_polozen[i+1], planeta.m, gwiazda.m)/(planeta.m)*(dt**2)
+        lista_polozen.append(rn)
+        p = potential(rn, planeta.m, gwiazda.m)
+        lista_potencjalow.append(p)
+        v = (lista_polozen[i+1]-lista_polozen[i])/(2*dt)
+        lista_kinetyczna.append(kinetic(planeta, v))
+
+def euler (lista_polozen, lista_pedow, liczba_iteracji, planeta, gwiazda, lista_kinetyczna, lista_potencjalow):
+    for i in xrange(liczba_iteracji):
+        rn = lista_polozen[i] + lista_pedow[i]*dt/planeta.m + (1/2)*force(lista_polozen[i], planeta.m, gwiazda.m)/(planeta.m)*(dt**2)
+        pn = lista_pedow[i] + force(lista_polozen[i], planeta.m, gwiazda.m)*dt
+        lista_polozen.append(rn)
+        lista_pedow.append(pn)
         p = potential(rn, planeta.m, gwiazda.m)
         potencjaly.append(p)
-        v = (tablica[i+1]-tablica[i])/(2*dt)
-        tablica_kinetyczna.append(kinetic(andrzej7000, v))
+        v = (lista_polozen[i+1]-lista_polozen[i])/(2*dt)
+        lista_kinetyczna.append(kinetic(planeta, v))
 
-def euler (tablica_polozen, tablica_pedow, liczba_iteracji, planeta, gwiazda):
+def leapfrog(liczba_iteracji, lista_predkosci, lista_polozen, planeta, gwiazda, lista_kinetyczna, lista_potencjalow):
     for i in xrange(liczba_iteracji):
-        rn = tablica_polozen[i] + tablica_pedow[i]*dt/planeta.m + (1/2)*force(tablica_polozen[i], planeta.m, gwiazda.m)/(planeta.m)*(dt**2)
-        pn = tablica_pedow[i] + force(tablica_polozen[i], planeta.m, gwiazda.m)*dt
-        tablica_polozen.append(rn)
-        tablica_pedow.append(pn)
-
-def leapfrog(liczba_iteracji, tabela_predkosci, tabela_polozen, planeta, gwiazda):
-    for i in xrange(liczba_iteracji):
-        vn = tabela_predkosci[i] + (force(tabela_polozen[i], planeta.m, gwiazda.m)/planeta.m)*(dt**2)
-        rn = tabela_polozen[i] + vn*dt
-        tabela_predkosci.append(vn)
-        tabela_polozen.append(rn)
+        vn = lista_predkosci[i] + (force(lista_polozen[i], planeta.m, gwiazda.m)/planeta.m)*dt
+        rn = lista_polozen[i] + vn*dt
+        lista_predkosci.append(vn)
+        lista_polozen.append(rn)
+        p = potential(rn, planeta.m, gwiazda.m)
+        potencjaly.append(p)
+        lista_kinetyczna.append(kinetic(planeta, np.linalg.norm(vn)))
 
 def rysuj_orbite (liczba_iteracji, polozenia, planeta, gwiazda):
     fig, ax = plt.subplots(figsize=(8,8))
@@ -76,10 +85,10 @@ def rysuj_orbite (liczba_iteracji, polozenia, planeta, gwiazda):
     for i in xrange(liczba_iteracji):
         planet = plt.Circle((polozenia[i]), planeta.rad, color = 'g')
         ax.add_artist(planet)
-    fig.savefig('orbita.png')
+    plt.show()
     plt.xlim(-1,4)
     plt.ylim(-2,2)
-    plt.show()
+    fig.savefig('orbita.png')
 
 def rysuj_potencjal (potencjaly, liczba_iteracji):
         plt.plot(xrange(liczba_iteracji),potencjaly)
@@ -94,9 +103,9 @@ pedy = [] #lista pedow w kazdym punkcie
 predkosci = [] #list predkosci w kazdym punkcie
 kinetyczna = []
 # Verlet
-verlet_start(andrzej7000.r, andrzej7000.v)
-verlet(polozenia, liczba_iteracji, andrzej7000, czomberbomber123, kinetyczna)
-# #rysuj_orbite(liczba_iteracji, polozenia, andrzej7000, czomberbomber123)
+# verlet_start(andrzej7000.r, andrzej7000.v)
+# verlet(polozenia, liczba_iteracji, andrzej7000, czomberbomber123, kinetyczna)
+# rysuj_orbite(liczba_iteracji, polozenia, andrzej7000, czomberbomber123)
 # rysuj_potencjal(potencjaly, liczba_iteracji)
 ###################
 
@@ -107,27 +116,24 @@ verlet(polozenia, liczba_iteracji, andrzej7000, czomberbomber123, kinetyczna)
 ##################
 
 # Leapfrog
-# leapfrog_start(andrzej7000, predkosci, polozenia, czomberbomber123)
-# leapfrog(liczba_iteracji, predkosci, polozenia, andrzej7000, czomberbomber123)
+leapfrog_start(andrzej7000, predkosci, polozenia, czomberbomber123)
+leapfrog(liczba_iteracji, predkosci, polozenia, andrzej7000, czomberbomber123, kinetyczna, potencjaly)
 # rysuj_orbite(liczba_iteracji, polozenia, andrzej7000, czomberbomber123)
 #################
 
-
-fig, ax = plt.subplots(figsize=(8,8))
-plt.figure(1)
-plt.subplot(211)
+fig = plt.figure()
+ax = fig.add_subplot(2, 2, 1)
 star = plt.Circle((czomberbomber123.r), czomberbomber123.rad, color = 'blue')
 ax.add_artist(star)
 for i in xrange(liczba_iteracji):
     planet = plt.Circle((polozenia[i]), andrzej7000.rad, color = 'g')
     ax.add_artist(planet)
-plt.subplot(212)
-plt.plot(xrange(liczba_iteracji),potencjaly)
-# plt.subplot(213)
-# plt.plot(xrange(liczba_iteracji),kinetyczna)
-# plt.subplot(214)
-# plt.plot(xrange(liczba_iteracji),kinetyczna+potencjaly)
-fig.savefig('orbita.png')
-plt.xlim(-1,4)
-plt.ylim(-2,2)
+plt.xlim(-4,4)
+plt.ylim(-4,4)
+ax2 = fig.add_subplot(2, 2, 2)
+ax2.plot(xrange(liczba_iteracji), potencjaly)
+ax3 = fig.add_subplot(2, 2, 3)
+ax3.plot(xrange(liczba_iteracji), kinetyczna)
+ax4 = fig.add_subplot(2, 2, 4)
+ax4.plot(xrange(liczba_iteracji), map(add,potencjaly,kinetyczna))
 plt.show()

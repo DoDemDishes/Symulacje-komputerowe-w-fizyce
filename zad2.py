@@ -34,7 +34,4 @@ for i in xrange(liczba_czastek):
     kolko = plt.Circle((gaz[i].r), promien, color = c)
     ax.add_artist(kolko)
 fig.savefig('kolka.png')
-print len(gaz)
-for i in gaz:
-    print i.r
 plt.show()
