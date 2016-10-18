@@ -30,7 +30,7 @@ while (len(gaz) < liczba_czastek):
     losowanie(liczba_czastek, promien, gaz)
 
 for i in xrange(liczba_czastek):
-    c = plt.cm.summer(np.linalg.norm(gaz[i].v))
+    c = plt.cm.cool(np.linalg.norm(gaz[i].v))
     kolko = plt.Circle((gaz[i].r), promien, color = c)
     ax.add_artist(kolko)
 fig.savefig('kolka.png')
