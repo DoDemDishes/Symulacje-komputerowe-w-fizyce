@@ -50,12 +50,12 @@ def leapfrog_start (planeta, lista_predkosci, lista_polozen, gwiazda):
 
 def verlet (lista_polozen, liczba_iteracji, planeta, gwiazda, lista_kinetyczna, lista_potencjalow):
     for i in xrange(liczba_iteracji):
-        rn = 2*lista_polozen[i+1] - lista_polozen[i] + force(lista_polozen[i+1], planeta.m, gwiazda.m)/(planeta.m)*(dt**2)
+        rn = 2*lista_polozen[i+1] - lista_polozen[i] + (force(lista_polozen[i+1], planeta.m, gwiazda.m)/(planeta.m))*(dt**2)
         lista_polozen.append(rn)
         p = potential(rn, planeta.m, gwiazda.m)
         lista_potencjalow.append(p)
-        v = (lista_polozen[i+1]-lista_polozen[i])/(2*dt)
-        lista_kinetyczna.append(kinetic(planeta, v))
+        v = (lista_polozen[i+1]-lista_polozen[i-1])/(2*dt)
+        lista_kinetyczna.append(kinetic(planeta, np.linalg.norm(v)))
 
 def euler (lista_polozen, lista_pedow, liczba_iteracji, planeta, gwiazda, lista_kinetyczna, lista_potencjalow):
     for i in xrange(liczba_iteracji):
@@ -65,8 +65,8 @@ def euler (lista_polozen, lista_pedow, liczba_iteracji, planeta, gwiazda, lista_
         lista_pedow.append(pn)
         p = potential(rn, planeta.m, gwiazda.m)
         potencjaly.append(p)
-        v = (lista_polozen[i+1]-lista_polozen[i])/(2*dt)
-        lista_kinetyczna.append(kinetic(planeta, v))
+        v = pn/planeta.m
+        lista_kinetyczna.append(kinetic(planeta, np.linalg.norm(v)))
 
 def leapfrog(liczba_iteracji, lista_predkosci, lista_polozen, planeta, gwiazda, lista_kinetyczna, lista_potencjalow):
     for i in xrange(liczba_iteracji):
@@ -103,23 +103,26 @@ pedy = [] #lista pedow w kazdym punkcie
 predkosci = [] #list predkosci w kazdym punkcie
 kinetyczna = []
 # Verlet
-# verlet_start(andrzej7000.r, andrzej7000.v)
-# verlet(polozenia, liczba_iteracji, andrzej7000, czomberbomber123, kinetyczna)
+verlet_start(andrzej7000.r, andrzej7000.v)
+verlet(polozenia, liczba_iteracji, andrzej7000, czomberbomber123, kinetyczna, potencjaly)
 # rysuj_orbite(liczba_iteracji, polozenia, andrzej7000, czomberbomber123)
 # rysuj_potencjal(potencjaly, liczba_iteracji)
 ###################
 
 # Euler
-# euler_start(polozenia, pedy, andrzej7000.r, andrzej7000.v, andrzej7000.m)
-# euler(polozenia, pedy, liczba_iteracji, andrzej7000, czomberbomber123)
+#euler_start(polozenia, pedy, andrzej7000.r, andrzej7000.v, andrzej7000.m)
+#euler(polozenia, pedy, liczba_iteracji, andrzej7000, czomberbomber123, kinetyczna, potencjaly)
 # rysuj_orbite(liczba_iteracji, polozenia, andrzej7000, czomberbomber123)
 ##################
 
 # Leapfrog
-leapfrog_start(andrzej7000, predkosci, polozenia, czomberbomber123)
-leapfrog(liczba_iteracji, predkosci, polozenia, andrzej7000, czomberbomber123, kinetyczna, potencjaly)
+
+#leapfrog_start(andrzej7000, predkosci, polozenia, czomberbomber123)
+#leapfrog(liczba_iteracji, predkosci, polozenia, andrzej7000, czomberbomber123, kinetyczna, potencjaly)
 # rysuj_orbite(liczba_iteracji, polozenia, andrzej7000, czomberbomber123)
 #################
+
+
 
 fig = plt.figure()
 ax = fig.add_subplot(2, 2, 1)
@@ -136,4 +139,6 @@ ax3 = fig.add_subplot(2, 2, 3)
 ax3.plot(xrange(liczba_iteracji), kinetyczna)
 ax4 = fig.add_subplot(2, 2, 4)
 ax4.plot(xrange(liczba_iteracji), map(add,potencjaly,kinetyczna))
+plt.ylim(-0.18,-0.22)
 plt.show()
+
