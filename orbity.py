@@ -4,7 +4,7 @@ from operator import add
 
 G = 0.01
 dt = 0.001
-liczba_iteracji = 10000
+liczba_iteracji = 5000
 
 class planeta:
     """ Klasa opisujaca pojedyncza """
@@ -102,27 +102,22 @@ potencjaly = [] #lista energii potencjalnej w kazdym punkcie
 pedy = [] #lista pedow w kazdym punkcie
 predkosci = [] #list predkosci w kazdym punkcie
 kinetyczna = []
-# Verlet
-verlet_start(andrzej7000.r, andrzej7000.v)
-verlet(polozenia, liczba_iteracji, andrzej7000, czomberbomber123, kinetyczna, potencjaly)
-# rysuj_orbite(liczba_iteracji, polozenia, andrzej7000, czomberbomber123)
-# rysuj_potencjal(potencjaly, liczba_iteracji)
-###################
 
-# Euler
-#euler_start(polozenia, pedy, andrzej7000.r, andrzej7000.v, andrzej7000.m)
-#euler(polozenia, pedy, liczba_iteracji, andrzej7000, czomberbomber123, kinetyczna, potencjaly)
-# rysuj_orbite(liczba_iteracji, polozenia, andrzej7000, czomberbomber123)
-##################
+c = raw_input('''Wybierz rodzaj symulacji:\n\
+1 - Euler 2 - Verlet 3 - Leapfrog \n''')
 
-# Leapfrog
-
-#leapfrog_start(andrzej7000, predkosci, polozenia, czomberbomber123)
-#leapfrog(liczba_iteracji, predkosci, polozenia, andrzej7000, czomberbomber123, kinetyczna, potencjaly)
-# rysuj_orbite(liczba_iteracji, polozenia, andrzej7000, czomberbomber123)
-#################
-
-
+if int(c) == 1:
+    print 'jestem w 1'
+    euler_start(polozenia, pedy, andrzej7000.r, andrzej7000.v, andrzej7000.m)
+    euler(polozenia, pedy, liczba_iteracji, andrzej7000, czomberbomber123, kinetyczna, potencjaly)
+elif int(c) == 2:
+    print 'jestem w 2'
+    verlet_start(andrzej7000.r, andrzej7000.v)
+    verlet(polozenia, liczba_iteracji, andrzej7000, czomberbomber123, kinetyczna, potencjaly)
+elif int(c) == 3:
+    print 'jestem w 3'
+    leapfrog_start(andrzej7000, predkosci, polozenia, czomberbomber123)
+    leapfrog(liczba_iteracji, predkosci, polozenia, andrzej7000, czomberbomber123, kinetyczna, potencjaly)
 
 fig = plt.figure()
 ax = fig.add_subplot(2, 2, 1)
@@ -141,4 +136,3 @@ ax4 = fig.add_subplot(2, 2, 4)
 ax4.plot(xrange(liczba_iteracji), map(add,potencjaly,kinetyczna))
 plt.ylim(-0.18,-0.22)
 plt.show()
-
