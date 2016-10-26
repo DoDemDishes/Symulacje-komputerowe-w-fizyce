@@ -2,49 +2,69 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 
-class czastka:
-	def __init__ (self,promien,pos,vel):
-		self.promien = promien
-		self.r = pos
-		self.v = vel
-
 particleNumber = 16
+particleMass = 0.05
 boxsize = 8.0
 eps = 1.0
 sigma = 1.0
-promien = 0.02
+radius = 0.4
 deltat = 0.0001
 kT = 2.5
-delta = 0.2
+delta = 2
+tmax = 0.1
+t = 0
+en = 0
 
+class czastka:
+	def __init__ (self,radius,pos,vel,force, mass):
+		self.radius = radius
+		self.r = pos
+		self.v = vel
+		self.f = force
+		self.m = mass
+
+def force (particle, particles):
+	force = np.array([0,0])
+	for i in particles:
+		if i == particle:
+			continue
+		temp = -(48.*eps)/(sigma**2)*((sigma/(np.linalg.norm(i.r - particle.r))))**14-\
+		(1./2.)*(sigma/(np.linalg.norm(i.r - particle.r))**8)*\
+		np.array([(i.r[0]-particle.r[0]),(i.r[1]-particle.r[1])])
+		force = np.add(force, temp)
+	return force
 
 particles = []
 
+
+
 for i in range(4):
 	for j in range(4):
-		polozenie = np.array([i*delta, j*delta])
-		predkosc = np.array([(np.random.random()-1./2),(np.random.random()-1./2)])
-		particles.append(czastka(promien,polozenie,predkosc))
+		position = np.array([i*delta, j*delta])
+		velocity = np.array([(np.random.random()-1./2),(np.random.random()-1./2)])
+		particles.append(czastka(radius,position,velocity,0,particleMass))
 
-for i in particles:
-	print i.r
-en = 0
-if (en%100 == 0):
-	plt.clf()
-	F = plt.gcf()
-	for i in range(particleNumber):
-		p = particles[i]
-		radius = p.promien
-		a = plt.gca()
-		cir = Circle((p.r[0], p.r[1], radius))
-		a.add_patch(cir)
-		plt.plot()
-	en += 1
-plt.xlim((0,boxsize))
-plt.ylim((0,boxsize))
-F.set_size_inches((6,6))
-nStr = str(en)
-nStr = nStr.rjust(5,'0')
-plt.title('Symulacja gazu Lennarda-Jonesa, krok' + nStr)
-plt.savefig('img' + nStr + '.png')
-plt.show()
+while t < tmax:
+	for i in xrange(particleNumber):
+		particles[i].f = force(particles[i],particles)
+	for j in xrange(particleNumber):
+		particles[i].v = particles[i].v + (particles[i].f/particles[i].m) * deltat
+		particles[i].r = particles[i].r + particles[i].v * deltat
+	if (en%100 == 0):
+		plt.clf()
+		F = plt.gcf()
+		for i in range(particleNumber):
+			p = particles[i]
+			a = plt.gca()
+			cir = Circle((p.r), p.radius, color = 'g')
+			a.add_patch(cir)
+			plt.plot()
+		plt.xlim((-1,boxsize))
+		plt.ylim((-1,boxsize))
+		F.set_size_inches((6,6))
+		nStr = str(en)
+		nStr = nStr.rjust(5,'0')
+		plt.title('Symulacja gazu Lennarda-Jonesa, krok' + nStr)
+		plt.savefig('gazy/img' + nStr + '.png')
+		en += 1
+		t += deltat
