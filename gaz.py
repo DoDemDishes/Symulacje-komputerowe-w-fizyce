@@ -8,10 +8,10 @@ boxsize = 8.0
 eps = 1.0
 sigma = 1.0
 radius = 0.4
-deltat = 0.0001
+deltat = 0.001
 kT = 2.5
 delta = 2
-tmax = 0.1
+tmax = 10
 t = 0
 en = 0
 
@@ -48,8 +48,9 @@ while t < tmax:
 	for i in xrange(particleNumber):
 		particles[i].f = force(particles[i],particles)
 	for j in xrange(particleNumber):
-		particles[i].v = particles[i].v + (particles[i].f/particles[i].m) * deltat
-		particles[i].r = particles[i].r + particles[i].v * deltat
+		particles[j].v = particles[j].v + (particles[j].f/particles[j].m) * deltat
+		particles[j].r = particles[j].r + particles[j].v * deltat
+
 	if (en%100 == 0):
 		plt.clf()
 		F = plt.gcf()
@@ -66,5 +67,5 @@ while t < tmax:
 		nStr = nStr.rjust(5,'0')
 		plt.title('Symulacja gazu Lennarda-Jonesa, krok' + nStr)
 		plt.savefig('gazy/img' + nStr + '.png')
-		en += 1
-		t += deltat
+	en += 1
+	t += deltat
