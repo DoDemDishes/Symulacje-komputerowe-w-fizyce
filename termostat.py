@@ -11,10 +11,9 @@ radius = 0.3
 deltat = 0.001
 kT = 2.5
 delta = 1.5
-tmax = 10
+tmax = 100
 t = 0
 en = 0
-# plt.ion()
 
 class czastka:
 	def __init__ (self,radius,pos,vel,force, mass):
@@ -51,6 +50,12 @@ def force (particle, particles):
 	# print np.linalg.norm(force_array)
 	return force_array
 
+def kinetic_energy (particle):
+	return 1./2 * particle.m * np.linalg.norm(particle.v)**2
+
+def potential_energy (particle, particles):
+	r = np.linalg.norm(particle.r - particles.r)
+	return 4*eps*((sigma/r)**12-(sigma/r)**6)
 #### Kreacja czastek
 particles = []
 
@@ -66,8 +71,8 @@ for i in particles:
 
 #### Glowna petla programu
 while t < tmax:
-	kinetic_energy = 0
-	potential_energy = 0
+	kinetic = 0
+	potential = 0
 	for i in xrange(particleNumber):
 		particles[i].f = force(particles[i],particles)
 		particles[i].v = particles[i].v + (particles[i].f/particles[i].m) * deltat
@@ -81,11 +86,18 @@ while t < tmax:
 			particles[i].r[1] -= boxsize
 		if particles[i].r[1] < 0:
 			particles[i].r[1] += boxsize
-
-		kinetic_energy += 1./2 * particles[i].m * np.linalg.norm(particles[i].v)**2
-
-	if (en%50 == 0):
+		kinetic += kinetic_energy(particles[i])
+	for i in xrange(particleNumber):
+		for j in xrange(particleNumber):
+			if i == j:
+				continue
+			potential += potential_energy(particles[i],particles[j])
+	if (en%100 == 0):
 		# print kinetic_energy
+		fig = plt.figure()
+		ax1 = fig.add_subplot(1, 2, 1)
+		ax2 = fig.add_subplot(2, 2, 2)
+		ax3 = fig.add_subplot(2, 2, 4)
 		plt.clf()
 		F = plt.gcf()
 		for i in range(particleNumber):
@@ -101,8 +113,8 @@ while t < tmax:
 		nStr = str(en)
 		nStr = nStr.rjust(5,'0')
 		plt.title('Symulacja gazu Lennarda-Jonesa, krok' + nStr)
-		plt.savefig('gazy/img' + nStr + '.png')
+		# plt.savefig('gazy/img' + nStr + '.png')
 		# plt.pause(0.000001)
-		print kinetic_energy
+		plt.show()
 	en += 1
 	t += deltat
