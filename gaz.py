@@ -14,7 +14,7 @@ delta = 1.5
 tmax = 10
 t = 0
 en = 0
-# plt.ion()
+plt.ion()
 
 class czastka:
 	def __init__ (self,radius,pos,vel,force, mass):
@@ -84,7 +84,7 @@ while t < tmax:
 
 		kinetic_energy += 1./2 * particles[i].m * np.linalg.norm(particles[i].v)**2
 
-	if (en%50 == 0):
+	if (en%100 == 0):
 		# print kinetic_energy
 		plt.clf()
 		F = plt.gcf()
@@ -101,8 +101,8 @@ while t < tmax:
 		nStr = str(en)
 		nStr = nStr.rjust(5,'0')
 		plt.title('Symulacja gazu Lennarda-Jonesa, krok' + nStr)
-		plt.savefig('gazy/img' + nStr + '.png')
-		# plt.pause(0.000001)
+		# plt.savefig('gazy/img' + nStr + '.png')
+		plt.pause(0.000001)
 		print kinetic_energy
 	en += 1
 	t += deltat

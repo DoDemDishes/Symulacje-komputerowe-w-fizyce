@@ -1,25 +1,32 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
+import math
 
+#### Wartosci stale
 particleNumber = 16
 particleMass = 0.1
 boxsize = 8.0
-eps = 0.05
+eps = 1
 sigma = 0.8
 radius = 0.3
-deltat = 0.001
+deltat = 0.01
 kT = 2.5
 delta = 1.5
 tmax = 100
 t = 0
 en = 0
+kb = 1.38064852*10**(-23)
+T_ext = 1000000
+plt.ion()
+
 
 class czastka:
 	def __init__ (self,radius,pos,vel,force, mass):
 		self.radius = radius
 		self.r = pos
 		self.v = vel
+		self.vu = 0
 		self.f = force
 		self.m = mass
 
@@ -47,7 +54,6 @@ def force (particle, particles):
 		ry = np.array(r_vect[1])
 		force = -(48.*eps)/(sigma**2)*((sigma/r)**14 - 1./2.*(sigma/r)**8)*np.array([rx,ry])
 		force_array = np.add(force_array, force)
-	# print np.linalg.norm(force_array)
 	return force_array
 
 def kinetic_energy (particle):
@@ -58,7 +64,6 @@ def potential_energy (particle, particles):
 	return 4*eps*((sigma/r)**12-(sigma/r)**6)
 #### Kreacja czastek
 particles = []
-
 for i in range(4):
 	for j in range(4):
 		position = np.array([(i+1)*delta, (j+1)*delta])
@@ -68,36 +73,38 @@ for i in range(4):
 #### Inicjalizacja predkosci
 for i in particles:
 	i.v = i.v - 1/i.m * force(i,particles) * 1./2. * deltat
-
 #### Glowna petla programu
 while t < tmax:
 	kinetic = 0
 	potential = 0
 	for i in xrange(particleNumber):
 		particles[i].f = force(particles[i],particles)
-		particles[i].v = particles[i].v + (particles[i].f/particles[i].m) * deltat
-		particles[i].r = (particles[i].r + particles[i].v * deltat)
-		#### Najblizszy obraz
-		if particles[i].r[0] > boxsize:
-			particles[i].r[0] -= boxsize
-		if particles[i].r[0] < 0:
-			particles[i].r[0] += boxsize
-		if particles[i].r[1] > boxsize:
-			particles[i].r[1] -= boxsize
-		if particles[i].r[1] < 0:
-			particles[i].r[1] += boxsize
-		kinetic += kinetic_energy(particles[i])
+		particles[i].vu = particles[i].v + (particles[i].f/particles[i].m) * deltat/2
+		kinetic += 1/2. * particles[i].m * np.linalg.norm(particles[i].vu)**2
+	T = 1/2. * 1/(kb*particleNumber)*kinetic/particleNumber
+	print T
+	eta = math.sqrt(T_ext/T)
+	for i in xrange(particleNumber):
+		particles[i].v = (2*eta-1)*particles[i].v + deltat*eta*particles[i].f/particles[i].m
+		particles[i].r = particles[i].r + particles[i].v * deltat
+#### Najblizszy obraz
+	if particles[i].r[0] > boxsize:
+		particles[i].r[0] -= boxsize
+	if particles[i].r[0] < 0:
+		particles[i].r[0] += boxsize
+	if particles[i].r[1] > boxsize:
+		particles[i].r[1] -= boxsize
+	if particles[i].r[1] < 0:
+		particles[i].r[1] += boxsize
+#### Liczenie energii
+
 	for i in xrange(particleNumber):
 		for j in xrange(particleNumber):
 			if i == j:
 				continue
 			potential += potential_energy(particles[i],particles[j])
+#### Rysowanie wykresu
 	if (en%100 == 0):
-		# print kinetic_energy
-		fig = plt.figure()
-		ax1 = fig.add_subplot(1, 2, 1)
-		ax2 = fig.add_subplot(2, 2, 2)
-		ax3 = fig.add_subplot(2, 2, 4)
 		plt.clf()
 		F = plt.gcf()
 		for i in range(particleNumber):
@@ -114,7 +121,6 @@ while t < tmax:
 		nStr = nStr.rjust(5,'0')
 		plt.title('Symulacja gazu Lennarda-Jonesa, krok' + nStr)
 		# plt.savefig('gazy/img' + nStr + '.png')
-		# plt.pause(0.000001)
-		plt.show()
+		plt.pause(0.000001)
 	en += 1
 	t += deltat
