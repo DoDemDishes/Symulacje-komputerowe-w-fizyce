@@ -46,7 +46,7 @@ def force (particle, particles):
 		r = np.linalg.norm(r_vect)
 		rx = np.array(r_vect[0])
 		ry = np.array(r_vect[1])
-		force = -(48.*eps)/(sigma**2)*((sigma/r)**14 - 1./2.*(sigma/r)**8)*np.array([rx,ry])
+		force = -(48.*eps)/(sigma)*((sigma/r)**14 - 1./2.*(sigma/r)**8)*np.array([rx,ry])
 		force_array = np.add(force_array, force)
 	# print np.linalg.norm(force_array)
 	return force_array

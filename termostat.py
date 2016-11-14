@@ -5,20 +5,18 @@ import math
 
 #### Wartosci stale
 particleNumber = 16
-particleMass = 0.1
+particleMass = 1.
 boxsize = 8.0
 eps = 1
-sigma = 0.8
+sigma = 1.0
 radius = 0.3
-deltat = 0.01
-kT = 2.5
+deltat = 0.0001
 delta = 1.5
 tmax = 100
 t = 0
 en = 0
-kb = 1.38064852*10**(-23)
-T_ext = 1000000
-plt.ion()
+T_ext = 2.5
+# plt.ion()
 
 
 class czastka:
@@ -52,7 +50,7 @@ def force (particle, particles):
 		r = np.linalg.norm(r_vect)
 		rx = np.array(r_vect[0])
 		ry = np.array(r_vect[1])
-		force = -(48.*eps)/(sigma**2)*((sigma/r)**14 - 1./2.*(sigma/r)**8)*np.array([rx,ry])
+		force = -(48.*eps)/(sigma)*((sigma/r)**14 - 1./2.*(sigma/r)**8)*np.array([rx,ry])
 		force_array = np.add(force_array, force)
 	return force_array
 
@@ -70,32 +68,45 @@ for i in range(4):
 		velocity = np.array([(np.random.random()-1./2),(np.random.random()-1./2)])
 		particles.append(czastka(radius,position,velocity,0,particleMass))
 
+sumv = 0.0
+sumv2 = 0.0
+for p in particles:
+	sumv = sumv + p.v
+sumv = sumv/particleNumber
+for p in particles:
+	p.v = (p.v - sumv)
+for p in particles:
+	sumv2 = sumv2 + np.dot(p.v,p.v)/2.
+sumv2 = sumv2/particleNumber
+fs = math.sqrt(T_ext/sumv2)
+for p in particles:
+	p.v = p.v*fs
 #### Inicjalizacja predkosci
 for i in particles:
-	i.v = i.v - 1/i.m * force(i,particles) * 1./2. * deltat
+	i.v = i.v - 1./i.m * force(i,particles) * 1./2. * deltat
 #### Glowna petla programu
 while t < tmax:
-	kinetic = 0
+	kinetic = 0.
 	potential = 0
 	for i in xrange(particleNumber):
 		particles[i].f = force(particles[i],particles)
 		particles[i].vu = particles[i].v + (particles[i].f/particles[i].m) * deltat/2
 		kinetic += 1/2. * particles[i].m * np.linalg.norm(particles[i].vu)**2
-	T = 1/2. * 1/(kb*particleNumber)*kinetic/particleNumber
-	print T
+	T = 1/2.* 1./(particleNumber)*kinetic
 	eta = math.sqrt(T_ext/T)
+	print T
 	for i in xrange(particleNumber):
-		particles[i].v = (2*eta-1)*particles[i].v + deltat*eta*particles[i].f/particles[i].m
+		particles[i].v = (2*eta-1)*particles[i].v + (deltat*eta*particles[i].f)/particles[i].m
 		particles[i].r = particles[i].r + particles[i].v * deltat
 #### Najblizszy obraz
-	if particles[i].r[0] > boxsize:
-		particles[i].r[0] -= boxsize
-	if particles[i].r[0] < 0:
-		particles[i].r[0] += boxsize
-	if particles[i].r[1] > boxsize:
-		particles[i].r[1] -= boxsize
-	if particles[i].r[1] < 0:
-		particles[i].r[1] += boxsize
+		if particles[i].r[0] > boxsize:
+			particles[i].r[0] -= boxsize
+		if particles[i].r[0] < 0:
+			particles[i].r[0] += boxsize
+		if particles[i].r[1] > boxsize:
+			particles[i].r[1] -= boxsize
+		if particles[i].r[1] < 0:
+			particles[i].r[1] += boxsize
 #### Liczenie energii
 
 	for i in xrange(particleNumber):
@@ -120,7 +131,7 @@ while t < tmax:
 		nStr = str(en)
 		nStr = nStr.rjust(5,'0')
 		plt.title('Symulacja gazu Lennarda-Jonesa, krok' + nStr)
-		# plt.savefig('gazy/img' + nStr + '.png')
-		plt.pause(0.000001)
+		plt.savefig('gazy/img' + nStr + '.png')
+		# plt.pause(0.000001)
 	en += 1
 	t += deltat
