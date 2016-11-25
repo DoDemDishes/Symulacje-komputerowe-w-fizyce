@@ -6,7 +6,7 @@ t = 0
 r = np.array([0,0])
 points = list()
 
-choice1 = input("Co rysujemy? \n 1 - Trojkaty Sierpinskieg \n 2 - Paprotki Barnsley'a \n")
+choice1 = input("Co rysujemy? \n 1 - Trojkaty Sierpinskiego \n 2 - Paprotki Barnsley'a \n")
 choice2 = int(input("Liczba iteracji? \n"))
 
 if choice1 == 1:
