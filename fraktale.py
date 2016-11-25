@@ -13,7 +13,6 @@ if choice1 == 1:
     def iteration(r,m):
         r = [m[0]*r[0] + m[1]*r[1] + m[4], m[2]*r[0] + m[3]*r[1] + m[5]]
         return r
-
     while t < choice2:
         ##generowanie liczby od 1 do 3
         random = np.random.randint(1,4)
@@ -54,10 +53,12 @@ elif choice1 == 2:
             r = iteration(r,m)
             points.append(r)
         t += 1
-
 else:
     print "Zly wybor, sprobuj jeszcze raz"
 
+
+print "max x: ", max(zip(*points)[0]) , "min x:", min(zip(*points)[0])
+print "max y: ", max(zip(*points)[1]) , "min y:", min(zip(*points)[1])
 
 zip(*points)
 plt.scatter(*zip(*points))
