@@ -1,5 +1,5 @@
 import numpy as np
-from scipy import integrate
+import scipy as sc
 import matplotlib.pyplot as plt
 
 a = 1
