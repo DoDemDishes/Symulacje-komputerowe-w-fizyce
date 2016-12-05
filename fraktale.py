@@ -45,20 +45,20 @@ if choice1 == 1:
 elif choice1 == 2:
     while t < choice2:
         ##generowanie liczby od 1 do 100
-        random = np.random.randint(1,101)
-        if random <= 73:
+        random = np.random.random()
+        if random < 0.73:
             m = [0.85, 0.04,-0.04, 0.85, 0.0, 1.6]
             r = iteration(r,m)
             points.append(r)
-        elif random > 73 & random <= 86 :
+        elif random < 0.86 :
+            m = [0.2, -0.26, 0.23, 0.22, 0.0, 1.6]
+            r = iteration(r,m)
+            points.append(r)
+        elif random < 0.97:
             m = [-0.15, 0.28, 0.26, 0.24, 0.0, 0.44]
             r = iteration(r,m)
             points.append(r)
-        elif random > 86 & random <= 97:
-            m = [-0.15, 0.28, 0.26, 0.24, 0.0, 0.44]
-            r = iteration(r,m)
-            points.append(r)
-        elif random > 97 & random <= 100:
+        else:
             m = [ 0.0, 0.0, 0.0, 0.16, 0.0, 0.0]
             r = iteration(r,m)
             points.append(r)
@@ -67,34 +67,31 @@ else:
     print "Zly wybor, sprobuj jeszcze raz"
 
 ## Liczenie rozmiaru pudelkowego
-for k in xrange(1,7):
-    nk = 0
-    for i in xrange(0,int(math.pow(2,k))):
-        for j in xrange(0,int(math.pow(2,k))):
-            # print 'i: ', i, ' j: ', j
-            includes = False
-            net = generate_net(points, math.pow(2,k)+1)
-            # print net
-            poly = [net[0][i],net[0][i+1],net[1][j],net[1][j+1]]
-            # print poly
-            bbPath = mplPath.Path(np.array([[poly[0], poly[1]],
-                         [poly[1], poly[2]],
-                         [poly[2], poly[3]],
-                         [poly[3], poly[0]]]))
-            for z in xrange(choice2):
-                includes = bbPath.contains_point((points[z][0], points[z][1]))
-                if includes == True:
-                    nk += 1
-                    break
-    # dimensions.append([nk,k])
-    dimensions.append([math.log(nk), k*math.log(2)])
+# for k in xrange(1,7):
+#     nk = 0
+#     for i in xrange(0,int(math.pow(2,k))):
+#         for j in xrange(0,int(math.pow(2,k))):
+#             # print 'i: ', i, ' j: ', j
+#             includes = False
+#             net = generate_net(points, math.pow(2,k)+1)
+#             # print net
+#             poly = [net[0][i],net[0][i+1],net[1][j],net[1][j+1]]
+#             # print poly
+#             bbPath = mplPath.Path(np.array([[poly[0], poly[1]],
+#                          [poly[1], poly[2]],
+#                          [poly[2], poly[3]],
+#                          [poly[3], poly[0]]]))
+#             for z in xrange(choice2):
+#                 includes = bbPath.contains_point((points[z][0], points[z][1]))
+#                 if includes == True:
+#                     nk += 1
+#                     break
+#     dimensions.append([math.log(nk), k*math.log(2)])
 
-np.savetxt("Paprotki_1m.csv", dimensions, delimiter=",")
-# print dimensions
-zip(*points)
-plt.figure(1)
-plt.subplot(211)
-plt.scatter(*zip(*points))
-plt.subplot(212)
-plt.scatter(*zip(*dimensions))
-# plt.show()
+# np.savetxt("Paprotki_100k.csv", dimensions, delimiter=",")
+# zip(*points)
+# plt.figure(1)
+plt.scatter(*zip(*points), s = 1 )
+# plt.subplot(212)
+# plt.scatter(*zip(*dimensions))
+plt.show()

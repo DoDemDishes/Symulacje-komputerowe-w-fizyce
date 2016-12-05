@@ -4,7 +4,7 @@ from operator import add
 
 G = 0.01
 dt = 0.001
-liczba_iteracji = 5000
+liczba_iteracji = 50000
 
 class planeta:
     """ Klasa opisujaca pojedyncza """

@@ -1,17 +1,13 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from numpy import array, zeros
 from numpy.random import randint, random
-
-m = [0]*2
-#p = 0
-# trojkat Sierpinskiego
-m[0] = array([[0.5,0.,0.,0.5,0.,0.],[0.5,0.,0.,0.5,0.5,0.],[0.5,0.,0.,0.5,0.25,np.sqrt(3./4)]])
-
-# paprotka
-m[1] = array([[0.85,0.04,-0.04,0.85,0.,1.6],[0.2,-0.26,0.23,0.22,0.,1.6],[-0.15,0.28,0.26,0.24,0.,0.44],[0.,0.,0.,0.16,0.,0.]])
+import matplotlib.pyplot as plt
 
 
+### Stale
+nr = input("Co sprawdzamy? \n 0 - Trojkaty Sierpinskiego \n 1 - Paprotki Barnsley'a \n")
+liczba_iteracji = 100000
+liczba_podzialow = 8
 
 def create_table(nr,liczba_iteracji):
 	p = None
@@ -41,19 +37,20 @@ def siatka():
 		stosunek.append(np.sum(pole))
 		tab_N.append(2**N)
 	return [tab_N,stosunek]
+m = [0]*2
+#p = 0
+# trojkat Sierpinskiego
+m[0] = array([[0.5,0.,0.,0.5,0.,0.],[0.5,0.,0.,0.5,0.5,0.],[0.5,0.,0.,0.5,0.25,np.sqrt(3./4)]])
+# paprotka
+m[1] = array([[0.85,0.04,-0.04,0.85,0.,1.6],[0.2,-0.26,0.23,0.22,0.,1.6],[-0.15,0.28,0.26,0.24,0.,0.44],[0.,0.,0.,0.16,0.,0.]])
 
 tab = [0]*4
-
-nr = 1
-liczba_iteracji = 100000
-liczba_podzialow = 8
 
 xpoints = [0.]
 ypoints = [0.]
 
 create_table(nr, liczba_iteracji)
 #print np.array(tab)/float(liczba_iteracji)
-
 
 ax = plt.gca()
 ax.set_axis_bgcolor('black')
@@ -67,27 +64,25 @@ x_max = max(xpoints)
 y_min = min(ypoints)
 y_max = max(ypoints)
 
-
 xpoints = array(xpoints)
 ypoints = array(ypoints)
 
 siatka = siatka()
 
-print siatka[0]
-print siatka[1]
+# print siatka[0]
+# print siatka[1]
 
 iksy = np.log(np.array(siatka[0]))
 igreki = np.log(np.array(siatka[1]))
 
-print iksy
-print igreki
+# print iksy
+# print igreki
 
 plt.figure(2)
 #plt.scatter(siatka[0], siatka[1], s=1, marker=".", lw=0, c='y')
 plt.scatter(iksy,igreki,marker="o")
-#plt.show()
-plt.savefig('paprotka_fit.png')
+# plt.show()
+plt.savefig('trojkaty.png')
 
 coeff = np.polyfit(iksy,igreki,deg=1)
 print coeff
-
