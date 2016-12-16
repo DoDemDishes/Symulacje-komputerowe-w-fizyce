@@ -28,8 +28,8 @@ while 1:
     v += v_new
     # print u_new
     # print v_new
-    if en % 50 == 0:
-        plt.scatter(xs,v)
+    if en % 10 == 0:
+        plt.plot(xs,v, 'r-', xs, u, 'g-')
         plt.savefig('reakcja/img' + str(en) + '.png')
         plt.clf()
     en += 1
