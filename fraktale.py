@@ -91,7 +91,7 @@ else:
 # np.savetxt("Paprotki_100k.csv", dimensions, delimiter=",")
 # zip(*points)
 # plt.figure(1)
-plt.scatter(*zip(*points), s = 1 )
+plt.plot(*zip(*points), s = 1 )
 # plt.subplot(212)
 # plt.scatter(*zip(*dimensions))
 plt.show()
