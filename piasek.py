@@ -4,10 +4,10 @@ import matplotlib
 import csv
 from collections import Counter
 
-dim = (31,31)
+dim = (100,100)
 mapa = np.zeros(dim)
 t = 0
-tmax = 15000
+tmax = 30000
 temp = []
 liczba_czastek = []
 falaaaa = []
@@ -30,6 +30,8 @@ while t < tmax:
                     pass
                 try:
                     mapa[temp[i][0]-1][temp[i][1]] += 1
+                    if temp[i][0]-1 < 0:
+                        raise IndexError
                 except IndexError:
                     pass
                 try:
@@ -38,6 +40,8 @@ while t < tmax:
                     pass
                 try:
                     mapa[temp[i][0]][temp[i][1]-1] += 1
+                    if temp[i][1]-1 < 0:
+                        raise IndexError
                 except IndexError:
                     pass
             temp = []
@@ -50,7 +54,7 @@ while t < tmax:
         mapa[x][y] += 1
         t += 1
         liczba_czastek.append([t,np.array([np.sum(mapa)])])
-        if t >= 3000:
+        if t >= 22500:
             stacjonarny = True
 wystepowanie = Counter(falaaaa)
 ### printowanie macierzy
@@ -73,7 +77,10 @@ plt.ylabel('liczba czastek')
 plt.savefig(str('%03d' % t)+'czastki_od_czasu.png')
 plt.clf()
 ### printowanie histogramu
-plt.loglog(wystepowanie.keys(),wystepowanie.values())
+ax = plt.gca()
+ax.plot(wystepowanie.keys(),wystepowanie.values())
+ax.set_yscale('log')
+ax.set_xscale('log')
 plt.xlabel('S')
 plt.ylabel('N(S)')
 plt.savefig(str('%03d' % t)+'loglog.png')
